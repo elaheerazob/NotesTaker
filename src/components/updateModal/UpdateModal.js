@@ -2,6 +2,8 @@ import React from "react";
 
 import Modal from "react-modal";
 
+
+
 const customStyles = {
   content: {
     top: "50%",
@@ -19,7 +21,32 @@ Modal.setAppElement("#root");
 
 //don't worry its just a package for modal. just go and explore https://www.npmjs.com/package/react-modal
 
-export default function UpdateModal() {
+export default function UpdateModal({id,setReload,isReload}) {
+  // console.log(id);
+  const dataId = id;
+
+  const updateSubmit = (event) =>{
+    event.preventDefault()
+    // console.log('hhhh');
+    const name =event.target.name.value;
+    const address =event.target.address.value;
+    const info = {
+      name : name,
+      address : address
+    }
+    console.log(info,dataId);
+    fetch(`http://localhost:5000/note/${dataId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(info),
+    })
+      .then((res) => res.json())
+      .then((data) => setReload(!isReload));
+  
+  }
+
   let subtitle;
   const [modalIsOpen, setIsOpen] = React.useState(false);
 
@@ -29,7 +56,7 @@ export default function UpdateModal() {
 
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
-    subtitle.style.color = "#f00";
+    subtitle.style.color = "#f000";
   }
 
   function closeModal() {
@@ -54,13 +81,14 @@ export default function UpdateModal() {
         </button>
         <div>Please insert your text</div>
         <div className=" p-3 color-4D4C7D">
-          <form className="container " >
+          <form className="container " onSubmit={updateSubmit} >
             <div className="input-group mb-3 mt-5">
               <input
                 type="text"
                 className="form-control"
                 placeholder="Your name"
                 aria-label="Username"
+                name="name"
               />
             </div>
 
@@ -68,6 +96,7 @@ export default function UpdateModal() {
               <textarea
                 className="form-control"
                 aria-label="With textarea"
+                name="address"
               ></textarea>
             </div>
             <div className="mt-4">
